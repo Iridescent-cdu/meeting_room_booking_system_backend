@@ -1,6 +1,6 @@
 /*
  * @Date: 2024-01-12 22:37:08
- * @Description: Redis 工具模块
+ * @Description: Redis工具模块
  */
 import { Global, Module } from '@nestjs/common';
 import { RedisService } from './redis.service';
