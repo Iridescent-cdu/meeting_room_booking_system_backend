@@ -18,12 +18,13 @@ import { createClient } from 'redis';
             host: 'localhost',
             port: 6379,
           },
-          database: 1,
+          database: 0,
         });
         await client.connect();
         return client;
       },
     },
   ],
+  exports: [RedisService],
 })
 export class RedisModule {}
