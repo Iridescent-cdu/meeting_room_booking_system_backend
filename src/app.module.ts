@@ -10,6 +10,7 @@ import { UserModule } from './user/user.module';
 import { User } from './user/entities/user.entity';
 import { Role } from './user/entities/role.entity';
 import { Permission } from './user/entities/permission.entity';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { Permission } from './user/entities/permission.entity';
       extra: { authPlugin: 'sha256_password' },
     }),
     UserModule,
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [AppService],
