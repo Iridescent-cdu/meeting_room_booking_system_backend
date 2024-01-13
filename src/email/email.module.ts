@@ -6,6 +6,7 @@ import { Global, Module } from '@nestjs/common';
 import { EmailService } from './email.service';
 import { EmailController } from './email.controller';
 import { createTransport } from 'nodemailer';
+import { ConfigService } from '@nestjs/config';
 @Global()
 @Module({
   controllers: [EmailController],
@@ -13,13 +14,14 @@ import { createTransport } from 'nodemailer';
     EmailService,
     {
       provide: 'EMAIL_SERVICE',
-      useFactory() {
+      inject: [ConfigService],
+      useFactory(configService: ConfigService) {
         const transporter = createTransport({
-          host: 'smtp.qq.com',
-          port: 587,
+          host: configService.get('nodemailer_host'),
+          port: configService.get('nodemailer_port'),
           auth: {
-            user: '2389504513@qq.com',
-            pass: 'euvssomcevirdjgb',
+            user: configService.get('nodemailer_auth_user'),
+            pass: configService.get('nodemailer_auth_pass'),
           },
         });
         return transporter;
