@@ -23,11 +23,11 @@ interface UserInfo {
 }
 
 export class LoginUserVo {
-  public userInfo: UserInfo;
+  private userInfo: UserInfo;
 
-  public accessToken: string;
+  private accessToken: string;
 
-  public refreshToken: string;
+  private refreshToken: string;
 
   constructor(
     userInfo?: UserInfo,
@@ -39,12 +39,24 @@ export class LoginUserVo {
     this.refreshToken = refreshToken;
   }
 
+  public get getUserInfo() {
+    return this.userInfo;
+  }
+
   public set setUserInfo(userInfo: UserInfo) {
     this.userInfo = userInfo;
   }
 
+  public get getAccessToken() {
+    return this.accessToken;
+  }
+
   public set setAccessToken(accessToken) {
     this.accessToken = accessToken;
+  }
+
+  public get getRefreshToken() {
+    return this.refreshToken;
   }
 
   public set setRefreshToken(refreshToken) {

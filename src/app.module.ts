@@ -13,6 +13,7 @@ import { Permission } from './user/entities/permission.entity';
 import { RedisModule } from './redis/redis.module';
 import { EmailModule } from './email/email.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -36,6 +37,18 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
           poolSize: 10,
           connectorPackage: 'mysql2',
           extra: { authPlugin: 'sha256_password' },
+        };
+      },
+    }),
+    JwtModule.registerAsync({
+      global: true,
+      inject: [ConfigService],
+      useFactory(configService: ConfigService) {
+        return {
+          secret: configService.get('jwt_secret'),
+          signOptions: {
+            expiresIn: configService.get('jwt_access_token_expires_time'),
+          },
         };
       },
     }),
