@@ -51,7 +51,7 @@ export class LoginUserVo {
     return this.accessToken;
   }
 
-  public set setAccessToken(accessToken) {
+  public set setAccessToken(accessToken: string) {
     this.accessToken = accessToken;
   }
 
@@ -59,7 +59,7 @@ export class LoginUserVo {
     return this.refreshToken;
   }
 
-  public set setRefreshToken(refreshToken) {
+  public set setRefreshToken(refreshToken: string) {
     this.refreshToken = refreshToken;
   }
 }

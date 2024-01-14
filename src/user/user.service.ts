@@ -148,4 +148,29 @@ export class UserService {
 
     return vo;
   }
+
+  async findUserById(userId: number, isAdmin: boolean) {
+    const foundUser = await this.userRepository.findOne({
+      where: {
+        id: userId,
+        isAdmin,
+      },
+      relations: ['roles', 'roles.permissions'],
+    });
+
+    return {
+      id: foundUser.id,
+      username: foundUser.username,
+      isAdmin: foundUser.isAdmin,
+      roles: foundUser.roles.map((item) => item.name),
+      permissions: foundUser.roles.reduce((arr, item) => {
+        item.permissions.forEach((permission) => {
+          if (arr.indexOf(permission) === -1) {
+            arr.push(permission);
+          }
+        });
+        return arr;
+      }, []),
+    };
+  }
 }
