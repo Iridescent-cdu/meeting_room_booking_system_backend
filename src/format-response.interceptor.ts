@@ -11,6 +11,7 @@ import { Observable, map } from 'rxjs';
 export class FormatResponseInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const response = context.switchToHttp().getResponse<Response>();
+
     return next.handle().pipe(
       map((data) => {
         return {
