@@ -12,6 +12,7 @@ import { RegisterUserDto } from './dto/register-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { UserInfo, RequireLogin } from 'src/custom.decorator';
 
 @Controller('user')
 export class UserController {
@@ -127,6 +128,7 @@ export class UserController {
       throw new UnauthorizedException('token 已失效，请重新登录');
     }
   }
+
   @Get('admin/refresh')
   async adminRefresh(@Query('refreshToken') refreshToken: string) {
     try {
@@ -162,5 +164,11 @@ export class UserController {
     } catch (error) {
       throw new UnauthorizedException('token 已失效，请重新登录');
     }
+  }
+
+  @Get('info')
+  @RequireLogin()
+  async info(@UserInfo('userId') userId: number) {
+    return await this.userService.findUserDetailById(userId);
   }
 }

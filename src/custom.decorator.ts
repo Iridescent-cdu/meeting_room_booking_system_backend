@@ -4,9 +4,9 @@ import {
   createParamDecorator,
 } from '@nestjs/common';
 
-export const requireLogin = () => SetMetadata('require-login', true);
+export const RequireLogin = () => SetMetadata('require-login', true);
 
-export const requirePermission = (...permissions: string[]) =>
+export const RequirePermission = (...permissions: string[]) =>
   SetMetadata('require-permission', permissions);
 
 export const UserInfo = createParamDecorator(

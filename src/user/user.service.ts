@@ -173,4 +173,10 @@ export class UserService {
       }, []),
     };
   }
+
+  async findUserDetailById(userId: number) {
+    return await this.userRepository.findOneBy({
+      id: userId,
+    });
+  }
 }
