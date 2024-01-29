@@ -250,7 +250,16 @@ export class UserController {
       generateParseIntPipe('pageSize'),
     )
     pageSize: number,
+    @Query('username') username: string,
+    @Query('nickname') nickName: string,
+    @Query('email') email: string,
   ) {
-    return await this.userService.findUserByPage(pageNo, pageSize);
+    return await this.userService.findUserByPage(
+      username,
+      nickName,
+      email,
+      pageNo,
+      pageSize,
+    );
   }
 }
