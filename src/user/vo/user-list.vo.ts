@@ -1,11 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class UserDetailVo {
+class User {
   @ApiProperty()
   id: number;
 
   @ApiProperty()
-  username: number;
+  username: string;
 
   @ApiProperty()
   nickName: string;
@@ -14,14 +14,24 @@ export class UserDetailVo {
   email: string;
 
   @ApiProperty()
-  headPic: string;
-
-  @ApiProperty()
   phoneNumber: string;
 
   @ApiProperty()
   isFrozen: boolean;
 
   @ApiProperty()
+  headPic: string;
+
+  @ApiProperty()
   createTime: Date;
+}
+
+export class UserListVo {
+  @ApiProperty({
+    type: [User],
+  })
+  users: User[];
+
+  @ApiProperty()
+  totalCount: number;
 }
