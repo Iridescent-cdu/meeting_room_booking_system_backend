@@ -255,4 +255,18 @@ export class UserService {
       return '用户信息修改失败';
     }
   }
+
+  async freezeUserById(userId: number) {
+    const foundUser = await this.userRepository.findOneBy({
+      id: userId,
+    });
+
+    if (!foundUser) {
+      throw new HttpException('用户不存在', HttpStatus.BAD_REQUEST);
+    }
+
+    foundUser.isFrozen = true;
+
+    await this.userRepository.save(foundUser);
+  }
 }
