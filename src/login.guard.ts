@@ -3,13 +3,13 @@ import {
   ExecutionContext,
   Inject,
   Injectable,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
-import { Request } from 'express';
 import { Observable } from 'rxjs';
-import { UnLoginException } from './unlogin.filter';
 import { Permission } from './user/entities/permission.entity';
+import { Request } from 'express';
 
 interface JwtUserData {
   userId: number;
@@ -46,7 +46,7 @@ export class LoginGuard implements CanActivate {
     const authorization = request.headers.authorization;
 
     if (!authorization) {
-      throw new UnLoginException('用户未登录');
+      throw new UnauthorizedException('用户未登录');
     }
     try {
       const token = authorization.split(' ')[1];
@@ -60,7 +60,7 @@ export class LoginGuard implements CanActivate {
       };
       return true;
     } catch (error) {
-      throw new UnLoginException('token 失效，请重新登录');
+      throw new UnauthorizedException('token 失效，请重新登录');
     }
   }
 }
