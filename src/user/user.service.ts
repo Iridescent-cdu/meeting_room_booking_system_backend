@@ -269,4 +269,16 @@ export class UserService {
 
     await this.userRepository.save(foundUser);
   }
+
+  async findUserByPage(pageNo: number, pageSize: number) {
+    const [users, totalCount] = await this.userRepository.findAndCount({
+      skip: (pageNo - 1) * pageSize,
+      take: pageSize,
+    });
+
+    return {
+      users,
+      totalCount,
+    };
+  }
 }

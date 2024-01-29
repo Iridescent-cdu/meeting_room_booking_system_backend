@@ -1,22 +1,24 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Get,
   Inject,
   Post,
   Query,
   UnauthorizedException,
 } from '@nestjs/common';
-import { UserService } from './user.service';
-import { RegisterUserDto } from './dto/register-user.dto';
-import { LoginUserDto } from './dto/login-user.dto';
-import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { UserInfo, RequireLogin } from 'src/custom.decorator';
-import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
-import { RedisService } from 'src/redis/redis.service';
+import { JwtService } from '@nestjs/jwt';
+import { RequireLogin, UserInfo } from 'src/custom.decorator';
 import { EmailService } from 'src/email/email.service';
+import { RedisService } from 'src/redis/redis.service';
+import { generateParseIntPipe } from 'src/utils';
+import { LoginUserDto } from './dto/login-user.dto';
+import { RegisterUserDto } from './dto/register-user.dto';
+import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UserService } from './user.service';
 
 @Controller('user')
 export class UserController {
@@ -236,5 +238,19 @@ export class UserController {
   async freeze(@Query('id') userId: number) {
     await this.userService.freezeUserById(userId);
     return 'success';
+  }
+
+  @Get('list')
+  async list(
+    @Query('pageNo', new DefaultValuePipe(1), generateParseIntPipe('pageNo'))
+    pageNo: number,
+    @Query(
+      'pageSize',
+      new DefaultValuePipe(2),
+      generateParseIntPipe('pageSize'),
+    )
+    pageSize: number,
+  ) {
+    return await this.userService.findUserByPage(pageNo, pageSize);
   }
 }
