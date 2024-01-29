@@ -13,6 +13,7 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UserInfo, RequireLogin } from 'src/custom.decorator';
+import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
 
 @Controller('user')
 export class UserController {
@@ -170,5 +171,14 @@ export class UserController {
   @RequireLogin()
   async info(@UserInfo('userId') userId: number) {
     return await this.userService.findUserDetailById(userId);
+  }
+
+  @Post(['update_password', 'admin/update_password'])
+  @RequireLogin()
+  async updatePassword(
+    @UserInfo('userId') userId: number,
+    @Body() passwordDto: UpdateUserPasswordDto,
+  ) {
+    return await this.userService.updatePassword(userId, passwordDto);
   }
 }
