@@ -16,6 +16,7 @@ import { UserInfo, RequireLogin } from 'src/custom.decorator';
 import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
 import { RedisService } from 'src/redis/redis.service';
 import { EmailService } from 'src/email/email.service';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -204,5 +205,14 @@ export class UserController {
       html: `<p>你的更改密码验证码是${code}</p>`,
     });
     return '发送成功';
+  }
+
+  @Post(['update', 'admin/update'])
+  @RequireLogin()
+  async update(
+    @UserInfo('userId') userId: number,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return await this.userService.update(userId, updateUserDto);
   }
 }
