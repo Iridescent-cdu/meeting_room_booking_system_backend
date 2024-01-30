@@ -3,6 +3,7 @@ import { MeetingRoom } from './entities/meeting-room.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateMeetingRoomDto } from './dto/create-meeting-room.dto';
+import { UpdateMeetingRoomDto } from './dto/update-meeting-room.dto';
 
 @Injectable()
 export class MeetingRoomService {
@@ -56,5 +57,28 @@ export class MeetingRoomService {
       throw new BadRequestException('会议室名字已经存在');
     }
     return await this.meetingRoomRepository.insert(meetingRoomDto);
+  }
+
+  async update(meetingRoomDto: UpdateMeetingRoomDto) {
+    const foundMeetingRoom = await this.meetingRoomRepository.findOneBy({
+      id: meetingRoomDto.id,
+    });
+
+    if (!foundMeetingRoom) {
+      throw new BadRequestException('会议室不存在');
+    }
+
+    foundMeetingRoom.name = meetingRoomDto.name;
+    foundMeetingRoom.capacity = meetingRoomDto.capacity;
+    foundMeetingRoom.description = meetingRoomDto.description;
+    foundMeetingRoom.equipment = meetingRoomDto.equipment;
+    foundMeetingRoom.location = meetingRoomDto.location;
+
+    await this.meetingRoomRepository.update(
+      { id: foundMeetingRoom.id },
+      foundMeetingRoom,
+    );
+
+    return 'success';
   }
 }
