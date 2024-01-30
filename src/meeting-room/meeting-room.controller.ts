@@ -3,6 +3,7 @@ import {
   Controller,
   DefaultValuePipe,
   Get,
+  Param,
   Post,
   Query,
 } from '@nestjs/common';
@@ -37,5 +38,10 @@ export class MeetingRoomController {
   @Post('update')
   async update(@Body() meetingRoomDto: UpdateMeetingRoomDto) {
     return await this.meetingRoomService.update(meetingRoomDto);
+  }
+
+  @Get('/:id')
+  async find(@Param('id') id: number) {
+    return await this.meetingRoomService.findById(id);
   }
 }

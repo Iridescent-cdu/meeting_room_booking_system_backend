@@ -81,4 +81,10 @@ export class MeetingRoomService {
 
     return 'success';
   }
+
+  async findById(id: number) {
+    return await this.meetingRoomRepository.findOneBy({
+      id: id,
+    });
+  }
 }
