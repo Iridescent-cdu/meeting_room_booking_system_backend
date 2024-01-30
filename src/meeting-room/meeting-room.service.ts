@@ -1,8 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { MeetingRoom } from './entities/meeting-room.entity';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateMeetingRoomDto } from './dto/create-meeting-room.dto';
+import { UpdateMeetingRoomDto } from './dto/update-meeting-room.dto';
 
 @Injectable()
 export class MeetingRoomService {
@@ -31,15 +32,28 @@ export class MeetingRoomService {
     this.meetingRoomRepository.insert([room1, room2, room3]);
   }
 
-  async find(pageNo: number, pageSize: number) {
+  async find(
+    pageNo: number,
+    pageSize: number,
+    name: string,
+    capacity: number,
+    equipment: string,
+  ) {
     if (pageNo < 1) {
       throw new BadRequestException('页面最小为1');
     }
     const skipCount = (pageNo - 1) * pageSize;
+
+    const condition: Record<string, any> = {};
+    condition.name = Like(`%${name}%`);
+    condition.capacity = Like(`%${capacity}%`);
+    condition.equipment = Like(`%${equipment}%`);
+
     const [meetingRooms, totalCount] =
       await this.meetingRoomRepository.findAndCount({
         skip: skipCount,
         take: pageSize,
+        where: condition,
       });
 
     return {
@@ -56,5 +70,41 @@ export class MeetingRoomService {
       throw new BadRequestException('会议室名字已经存在');
     }
     return await this.meetingRoomRepository.insert(meetingRoomDto);
+  }
+
+  async update(meetingRoomDto: UpdateMeetingRoomDto) {
+    const foundMeetingRoom = await this.meetingRoomRepository.findOneBy({
+      id: meetingRoomDto.id,
+    });
+
+    if (!foundMeetingRoom) {
+      throw new BadRequestException('会议室不存在');
+    }
+
+    foundMeetingRoom.name = meetingRoomDto.name;
+    foundMeetingRoom.capacity = meetingRoomDto.capacity;
+    foundMeetingRoom.description = meetingRoomDto.description;
+    foundMeetingRoom.equipment = meetingRoomDto.equipment;
+    foundMeetingRoom.location = meetingRoomDto.location;
+
+    await this.meetingRoomRepository.update(
+      { id: foundMeetingRoom.id },
+      foundMeetingRoom,
+    );
+
+    return 'success';
+  }
+
+  async findById(id: number) {
+    return await this.meetingRoomRepository.findOneBy({
+      id: id,
+    });
+  }
+
+  async deleteById(id: number) {
+    await this.meetingRoomRepository.delete({
+      id: id,
+    });
+    return 'success';
   }
 }
