@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { MeetingRoom } from './entities/meeting-room.entity';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateMeetingRoomDto } from './dto/create-meeting-room.dto';
 import { UpdateMeetingRoomDto } from './dto/update-meeting-room.dto';
@@ -32,15 +32,28 @@ export class MeetingRoomService {
     this.meetingRoomRepository.insert([room1, room2, room3]);
   }
 
-  async find(pageNo: number, pageSize: number) {
+  async find(
+    pageNo: number,
+    pageSize: number,
+    name: string,
+    capacity: number,
+    equipment: string,
+  ) {
     if (pageNo < 1) {
       throw new BadRequestException('页面最小为1');
     }
     const skipCount = (pageNo - 1) * pageSize;
+
+    const condition: Record<string, any> = {};
+    condition.name = Like(`%${name}%`);
+    condition.capacity = Like(`%${capacity}%`);
+    condition.equipment = Like(`%${equipment}%`);
+
     const [meetingRooms, totalCount] =
       await this.meetingRoomRepository.findAndCount({
         skip: skipCount,
         take: pageSize,
+        where: condition,
       });
 
     return {

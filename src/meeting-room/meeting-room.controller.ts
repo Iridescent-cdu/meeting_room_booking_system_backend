@@ -27,8 +27,17 @@ export class MeetingRoomController {
       generateParseIntPipe('pageSize'),
     )
     pageSize: number,
+    @Query('name') name: string,
+    @Query('capacity') capacity: number,
+    @Query('equipment') equipment: string,
   ) {
-    return await this.meetingRoomService.find(pageNo, pageSize);
+    return await this.meetingRoomService.find(
+      pageNo,
+      pageSize,
+      name,
+      capacity,
+      equipment,
+    );
   }
 
   @Post('create')
