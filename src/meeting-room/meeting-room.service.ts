@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { MeetingRoom } from './entities/meeting-room.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CreateMeetingRoomDto } from './dto/create-meeting-room.dto';
 
 @Injectable()
 export class MeetingRoomService {
@@ -45,5 +46,15 @@ export class MeetingRoomService {
       meetingRooms,
       totalCount,
     };
+  }
+
+  async create(meetingRoomDto: CreateMeetingRoomDto) {
+    const room = await this.meetingRoomRepository.findOneBy({
+      name: meetingRoomDto.name,
+    });
+    if (room) {
+      throw new BadRequestException('会议室名字已经存在');
+    }
+    return await this.meetingRoomRepository.insert(meetingRoomDto);
   }
 }
