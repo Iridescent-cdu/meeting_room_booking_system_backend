@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   DefaultValuePipe,
+  Delete,
   Get,
   Param,
   Post,
@@ -40,8 +41,13 @@ export class MeetingRoomController {
     return await this.meetingRoomService.update(meetingRoomDto);
   }
 
-  @Get('/:id')
+  @Get(':id')
   async find(@Param('id') id: number) {
     return await this.meetingRoomService.findById(id);
+  }
+
+  @Delete(':id')
+  async delete(@Param('id') id: number) {
+    return await this.meetingRoomService.deleteById(id);
   }
 }

@@ -87,4 +87,11 @@ export class MeetingRoomService {
       id: id,
     });
   }
+
+  async deleteById(id: number) {
+    await this.meetingRoomRepository.delete({
+      id: id,
+    });
+    return 'success';
+  }
 }
