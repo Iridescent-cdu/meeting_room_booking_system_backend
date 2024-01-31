@@ -13,4 +13,12 @@ export class StatisticController {
   ) {
     return this.statisticService.userBookingCount(startTime, endTime);
   }
+
+  @Get('meetingRoomUsedCount')
+  async meetingRoomUsedCount(
+    @Query('startTime') startTime: string,
+    @Query('endTime') endTime,
+  ) {
+    return this.statisticService.meetingRoomUsedCount(startTime, endTime);
+  }
 }
