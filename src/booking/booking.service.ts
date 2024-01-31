@@ -162,4 +162,43 @@ export class BookingService {
 
     await this.entityManager.save(Booking, booking);
   }
+
+  async apply(id: number) {
+    await this.entityManager.update(
+      Booking,
+      {
+        id: id,
+      },
+      {
+        status: '审批通过',
+      },
+    );
+    return 'success';
+  }
+
+  async reject(id: number) {
+    await this.entityManager.update(
+      Booking,
+      {
+        id: id,
+      },
+      {
+        status: '审批驳回',
+      },
+    );
+    return 'success';
+  }
+
+  async unbind(id: number) {
+    await this.entityManager.update(
+      Booking,
+      {
+        id: id,
+      },
+      {
+        status: '已解除',
+      },
+    );
+    return 'success';
+  }
 }

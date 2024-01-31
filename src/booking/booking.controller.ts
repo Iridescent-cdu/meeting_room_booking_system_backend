@@ -3,6 +3,7 @@ import {
   Controller,
   DefaultValuePipe,
   Get,
+  Param,
   Post,
   Query,
 } from '@nestjs/common';
@@ -48,5 +49,20 @@ export class BookingController {
     @UserInfo('userId') userId: number,
   ) {
     return await this.bookingService.add(booking, userId);
+  }
+
+  @Get('apply/:id')
+  async apply(@Param('id') id: number) {
+    return this.bookingService.apply(id);
+  }
+
+  @Get('reject/:id')
+  async reject(@Param('id') id: number) {
+    return this.bookingService.reject(id);
+  }
+
+  @Get('unbind/:id')
+  async unbind(@Param('id') id: number) {
+    return this.bookingService.unbind(id);
   }
 }
