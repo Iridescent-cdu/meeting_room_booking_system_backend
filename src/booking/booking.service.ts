@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { MeetingRoom } from 'src/meeting-room/entities/meeting-room.entity';
 import { User } from 'src/user/entities/user.entity';
-import { Between, EntityManager, Like } from 'typeorm';
+import { Between, EntityManager, LessThanOrEqual, Like } from 'typeorm';
 import { Booking } from './entities/booking.entity';
 import { InjectEntityManager } from '@nestjs/typeorm';
+import { CreateBookingDto } from './dto/create-booking.dto';
 
 @Injectable()
 export class BookingService {
@@ -128,5 +129,37 @@ export class BookingService {
       }),
       totalCount,
     };
+  }
+
+  async add(bookingDto: CreateBookingDto, userId: number) {
+    const meetingRoom = await this.entityManager.findOneBy(MeetingRoom, {
+      id: bookingDto.meetingRoomId,
+    });
+
+    if (!meetingRoom) {
+      throw new BadRequestException('会议室不存在');
+    }
+
+    const user = await this.entityManager.findOneBy(User, {
+      id: userId,
+    });
+
+    const booking = new Booking();
+    booking.room = meetingRoom;
+    booking.user = user;
+    booking.startTime = new Date(bookingDto.startTime);
+    booking.endTime = new Date(bookingDto.endTime);
+
+    const res = await this.entityManager.findOneBy(Booking, {
+      room: meetingRoom,
+      startTime: LessThanOrEqual(booking.startTime),
+      endTime: LessThanOrEqual(booking.endTime),
+    });
+
+    if (res) {
+      throw new BadRequestException('该时间段会议室已被预定');
+    }
+
+    await this.entityManager.save(Booking, booking);
   }
 }

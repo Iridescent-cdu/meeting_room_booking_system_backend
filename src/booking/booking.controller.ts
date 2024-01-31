@@ -1,10 +1,20 @@
-import { Controller, DefaultValuePipe, Get, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  DefaultValuePipe,
+  Get,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { BookingService } from './booking.service';
 import { generateParseIntPipe } from 'src/utils';
+import { UserInfo } from 'src/custom.decorator';
+import { CreateBookingDto } from './dto/create-booking.dto';
 
 @Controller('booking')
 export class BookingController {
   constructor(private readonly bookingService: BookingService) {}
+
   @Get('list')
   async list(
     @Query('pageNo', new DefaultValuePipe(1), generateParseIntPipe('pageNo'))
@@ -21,7 +31,7 @@ export class BookingController {
     @Query('bookingTimeRangeStart') bookingTimeRangeStart: number,
     @Query('bookingTimeRangeEnd') bookingTimeRangeEnd: number,
   ) {
-    return this.bookingService.find(
+    return await this.bookingService.find(
       pageNo,
       pageSize,
       username,
@@ -30,5 +40,13 @@ export class BookingController {
       bookingTimeRangeStart,
       bookingTimeRangeEnd,
     );
+  }
+
+  @Post('add')
+  async add(
+    @Body() booking: CreateBookingDto,
+    @UserInfo('userId') userId: number,
+  ) {
+    return await this.bookingService.add(booking, userId);
   }
 }
