@@ -1,15 +1,23 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { InjectEntityManager } from '@nestjs/typeorm';
+import { EmailService } from 'src/email/email.service';
 import { MeetingRoom } from 'src/meeting-room/entities/meeting-room.entity';
+import { RedisService } from 'src/redis/redis.service';
 import { User } from 'src/user/entities/user.entity';
 import { Between, EntityManager, LessThanOrEqual, Like } from 'typeorm';
-import { Booking } from './entities/booking.entity';
-import { InjectEntityManager } from '@nestjs/typeorm';
 import { CreateBookingDto } from './dto/create-booking.dto';
+import { Booking } from './entities/booking.entity';
 
 @Injectable()
 export class BookingService {
   @InjectEntityManager()
   private entityManager: EntityManager;
+
+  @Inject(RedisService)
+  private redisService: RedisService;
+
+  @Inject(EmailService)
+  private emailService: EmailService;
 
   async initData() {
     const user1 = await this.entityManager.findOneBy(User, {
@@ -200,5 +208,32 @@ export class BookingService {
       },
     );
     return 'success';
+  }
+
+  async urge(id: number) {
+    const flag = await this.redisService.get(`urge_${id}`);
+
+    if (flag) {
+      return '半小时只能催办一次，请耐心等待';
+    }
+
+    let email = await this.redisService.get('admin_email');
+
+    if (!email) {
+      const admin = await this.entityManager.findOneBy(User, {
+        isAdmin: true,
+      });
+      email = admin.email;
+
+      this.redisService.set('admin_email', admin.email);
+    }
+
+    this.emailService.sendMail({
+      to: email,
+      subject: '预定申请催办提醒',
+      html: `id 为 ${id} 的预定申请正在等待审批`,
+    });
+
+    this.redisService.set(`urge_${id}`, 1, 60 * 30);
   }
 }
